@@ -1,8 +1,3 @@
-"""Classify imagined left and right fist movement using a simple EEG model.
-
-Train on two recording runs and test on the third, for each person separately.
-The measured score is for these cued recordings, not proof of thought-only BCI.
-"""
 from pathlib import Path
 import argparse
 import json
@@ -19,12 +14,11 @@ from threadpoolctl import threadpool_limits
 
 PROJECT = Path(__file__).resolve().parent
 SUBJECTS = list(range(1, 11))
-RUNS = [4, 8, 12]  # These runs contain IMAGINED left/right fist movement.
+RUNS = [4, 8, 12]  
 TARGET = 0.75
 
 
 def find_recording(subject, run, download=False):
-    """Find a downloaded EEG file; optionally download it when missing."""
     filename = f'S{subject:03d}R{run:02d}.edf'
     relative_path = Path('MNE-eegbci-data/files/eegmmidb/1.0.0')
     relative_path = relative_path / f'S{subject:03d}' / filename
@@ -43,7 +37,6 @@ def find_recording(subject, run, download=False):
 
 
 def make_features(signals, sampling_rate):
-    """Replace each half-second of EEG with its average voltage."""
     # signals has shape: number of trials, number of electrodes, time samples.
     # Subtract the average electrode voltage at each time point.
     signals = signals - signals.mean(axis=1, keepdims=True)
@@ -62,7 +55,6 @@ def make_features(signals, sampling_rate):
 
 
 def load_subject(subject, download=False, start_time=0.5):
-    """Read the three runs and return features, left/right labels and run IDs."""
     feature_parts = []
     labels = []
     run_numbers = []
@@ -75,8 +67,6 @@ def load_subject(subject, download=False, start_time=0.5):
         events, _ = mne.events_from_annotations(
             raw, event_id={'T1': 0, 'T2': 1}, verbose=False)
 
-        # Use 3.5 seconds: normally from 0.5 to 4.0 seconds after the cue.
-        # No continuous temporal filter: neighboring trials cannot enter here.
         trials = []
         for event in events:
             start = event[0] + int(start_time * sampling_rate)
@@ -95,8 +85,7 @@ def load_subject(subject, download=False, start_time=0.5):
 
 def make_model():
     """Scale the features, then fit a strongly regularized linear classifier."""
-    # The scaler learns its mean and spread ONLY from the training trials.
-    # A small C limits overfitting when only 30 training trials are available.
+    # mean and spread are learned through training trials, c limits overfitting when lack of trials
     return make_pipeline(
         StandardScaler(),
         LogisticRegression(C=0.01, max_iter=1000),
@@ -104,7 +93,6 @@ def make_model():
 
 
 def evaluate_subject(features, labels, run_numbers):
-    """Predict each trial once, with its complete recording run held out."""
     probabilities = np.zeros(len(labels))
     for test_run in RUNS:
         train = run_numbers != test_run
@@ -116,7 +104,6 @@ def evaluate_subject(features, labels, run_numbers):
 
 
 def run_evaluation(subjects=SUBJECTS, download=False, output=None):
-    """Evaluate all requested people and save the actual predictions."""
     subjects = list(subjects)
     if not subjects or len(set(subjects)) != len(subjects):
         raise ValueError('Use a nonempty list of different subject numbers.')
