@@ -1,0 +1,16 @@
+{
+  "controls": {
+    "before_cue": 0.5644444444444444,
+    "motor_channels_only": 0.7022222222222222
+  },
+  "permutations": 200,
+  "seed": 42,
+  "mean_shuffled_accuracy": 0.5029777777777779,
+  "maximum_shuffled_accuracy": 0.5777777777777777,
+  "permutation_p": 0.004975124378109453,
+  "caveat": "Conditional on frozen features; does not correct for all exploratory model search.",
+  "subject_bootstrap_95_percent_interval": [
+    0.6911111111111111,
+    0.8355555555555556
+  ]
+}

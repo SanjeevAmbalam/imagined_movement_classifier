@@ -1,0 +1,11 @@
+method,accuracy,correct,trials,evaluation_status
+Original short-window CSP/LDA,0.5822222222222222,262,450,matched run-separated baseline
+First revised nested pipeline,0.6355555555555555,286,450,development cross-validation
+Band-power best fixed model,0.6488888888888888,292,450,exploratory best configuration
+Expanded fixed CSP ensemble,0.6866666666666666,309,450,development cross-validation
+Pooled CSP fixed ensemble,0.7111111111111111,320,450,development with additional subjects training data
+Shared tangent-space best fixed model,0.6733333333333333,303,450,exploratory best configuration
+Continuous low-frequency best fixed model,0.7533333333333333,339,450,not retained - neighboring-trial filter effects possible
+Shared low-frequency nested selection,0.7933333333333333,357,450,not retained - neighboring-trial filter effects possible
+Final simple logistic regression,0.7666666666666667,345,450,development cross-validation
+Within-trial combined ensemble,0.7733333333333333,348,450,development cross-validation
